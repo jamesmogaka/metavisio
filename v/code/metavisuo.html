@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <title>metavisuo</title>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="metavisuo.css"/>
+        
+        <script type="module">
+            import {metavisuo} from "./metavisuo.js";
+            //
+            //Create a metavisuo object
+            const meta = new metavisuo();
+            //
+            //Show the metavisuo object
+            meta.show_panels();
+        </script>
+
+    </head>
+    
+    <body>
+        <!--
+        The header section-->
+        <div id="header">
+            <button id="zoom_out">&#43;</button>
+            <button id="zoom_in">&#45;</button>
+            <button id="pan_up">&#8743;</button>
+            <button id="pan_down">&#8744;</button>
+            <button id="pan_left">&#60;</button>
+            <button id="pan_right">&#62;</button>
+            <select id="databases"></select>
+            <button id="save">save</button>
+        </div>
+        <!--
+        The content section-->
+        <div id="content"></div>
+
+    </body>
+
+</html>

@@ -1,0 +1,22 @@
+        
+Name:	PETER KARIUKI MURAYA
+Account number:	29304128
+Meter number:	57100249176
+Balance:	-3,244.68(Over Payment)
+Last Bill
+Unpaid Bill Amount:	0.00
+Due Date:	05/08/2022
+Bill Date:	22/07/2022
+Bill Number:	202207BC0012807151
+
+
+Name:	PETER KARIUKI MURAYA
+Account number:	29304136
+Meter number:	57100147479
+Balance:	4,108.93
+Last Bill
+Unpaid Bill Amount:	4,108.93
+Due Date:	08/08/2022
+Bill Date:	23/07/2022
+Bill Number:	202207BC0012947015
+

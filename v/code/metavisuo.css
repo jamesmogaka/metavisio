@@ -1,0 +1,97 @@
+ html {
+    height: 100%;
+}
+
+body {
+    height: 100%;
+    display: grid;
+    grid-template-rows: 10% 90%;
+    overflow-y: hidden;
+    margin: 0;
+    padding: 0;
+}
+
+#header {
+    grid-template-rows: 10%;
+    position: sticky;
+    background-color: aqua;
+}
+
+#content {
+    overflow-y: hidden;
+    grid-template-rows: 90%;
+    background-color: bisque;
+}
+
+svg {
+    height: 100%;
+    width: 80%;
+    background-color: whitesmoke;
+    margin-right: 10%;
+    margin-left: 10%;
+    overflow-y: scroll;
+}
+
+circle {
+    stroke: none;
+    stroke-width: 0.2px;
+    fill: aquamarine;
+
+}
+
+.gattribute {
+    fill: blue;
+    font-size: 2px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.relations {
+    stroke: red;
+    stroke-width: 0.2px;
+}
+
+.chickenfoot {
+    stroke-width: 2px;
+    fill: none;
+    stroke:red;
+
+}
+
+.attrpoly {
+    fill: none;
+    stroke: black;
+    stroke-width: 0.2px;
+}
+
+.lables {
+    fill:black;
+    font-size: 2px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.get_path {
+    fill: blue;
+    /* font-size: 3em; */
+    stroke-width: 5px;
+}
+
+.tick {
+    fill: none;
+    stroke-width: 2px;
+    stroke:red;
+}
+
+.selected circle {
+    fill: rgb(189, 135, 222);
+    opacity: 0.1px;
+}
+
+button {
+    margin-left: 1%;
+    margin-top: 2%;
+    font-size: 24px;
+}
+
+select {
+    font-size: 30px;
+}

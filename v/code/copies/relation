@@ -1,0 +1,450 @@
+//
+//System for tracking assignments for employees of an organization.
+//
+//A column on the application database that is linked to a corresponding one
+//on the user database. Sometimes this link is broken and needs to be
+//re-established.
+type replica = { ename: string; cname: string };
+//
+//Intern information collected is used in two cases, when reporting and when
+//editing
+type usage =
+	| {
+			purpose: "report";
+	  }
+	| { purpose: "edit" };
+//
+//The type of intern data collected for reporting purposes.
+type intern_data = {
+	intern: {
+		name: string;
+		email: string;
+		title: string;
+		language: string;
+		requirements: string;
+	};
+	kin: { name: string; email: string; phone: string };
+	certification: Array<{
+		certificate_name: string;
+		institute: string;
+		start_date: string;
+		end_date: string;
+	}>;
+	attachment: Array<{
+		company: string;
+		designation: string;
+		start_date: string;
+		end_date: string;
+	}>;
+	sponsor: { name: string; email: string; phone: string };
+	referee: { name: string; email: string; phone: string };
+};
+//
+//Main application
+export default class main extends app.app {
+	//
+	public writer: mod.writer;
+	public messenger: mod.messenger;
+	public accountant: mod.accountant;
+	public scheduler: mod.scheduler;
+	//
+	//Initialize the main application.
+	constructor(config: app.Iconfig) {
+		super(config);
+		//
+		this.writer = new mod.writer();
+		this.messenger = new mod.messenger();
+		this.accountant = new mod.accountant();
+		this.scheduler = new mod.scheduler();
+	}
+	//
+	//Returns all the inbuilt products that are specific to
+	//this application
+	get_products_specific(): Array<outlook.assets.uproduct> {
+		return [
+			{
+				id: "actions",
+				title: "Actions",
+				solutions: [
+					{
+						title: "View due assignments",
+						id: "view_due_assignments",
+						listener: ["event", () => this.vue_due_assignments()]
+					}
+				]
+			},
+			{
+				id: "metavisuo",
+				title: "Metavisuo",
+				solutions: [
+					{
+						title: "Metavisuo",
+						id: "meta_data",
+						listener: ["event", () => this.view_meta_data()]
+					}
+				]
+			},
+			{
+				id: "simulating_data",
+				title: "Simulating data graph",
+				solutions: [
+					{
+						title: "Simulating data",
+						id: "simulating_data",
+						listener: ["event", () => this.view_simulating_data()]
+					}
+				]
+			},
+			{
+				id: "lvl2_registration",
+				title: "Registration",
+				solutions: [
+					{
+						title: "View Intern Information",
+						id: "view_intern",
+						listener: ["event", () => this.view_intern_information()]
+					},
+					
+				]
+			}
+		];
+	}
+
+	//
+	//Viewing the data migration diagram  
+	async view_meta_data(){
+		//
+		// Getting the data migration file
+		const Meta_visuo=new meta_visuo(this,"../../../tracker/v/templates/metavisuo.html");
+		Meta_visuo.administer();
+	}
+	//
+	//Viewing the data migration diagram  
+	async view_simulating_data(){
+		//
+		// Getting the data migration file
+		const migrate=new svg_migration_data(this,"../../../m_projects/svg_2/dat.html");
+		migrate.administer();
+	}
+	//
+	//List all assignments that are due and have not been reported.
+	//Ordered by Date.
+	vue_due_assignments(): void {
+		alert("This method is not implemented yet.");
+		//const data = encryption("encryption");
+		//alert(data);
+	}
+	//
+	//View information about an intern
+	async view_intern_information(): Promise<void> {
+		//
+		//1. Select the intern from the table
+		await this.get_selected_intern();
+		//
+	}
+	//
+	//Get the selected intern
+	async get_selected_intern(): Promise<void> {
+		//
+		//1. Get the selected intern
+		const tr: HTMLTableRowElement = this.document.querySelector(
+			"#content>table>tbody>.TR"
+		)!;
+		//
+		//When the administrator tries to view information about an intern, prompt
+		//him/her to select a message. And stop the execution of the program
+		if (tr === null)
+			throw new schema.mutall_error(
+				"NO INTERN was selected to reply. SELECT an INTERN and try again"
+			);
+		//
+		//2. Get the primary key of the selected message
+		const pk: string = tr.getAttribute("pk")!;
+		//
+		//3. Save the primary key of the selected intern
+		localStorage.setItem("intern", pk);
+	}
+}
+//
+interface point {
+	x:number;
+	y:number;
+}
+		
+		
+//
+class entity implements point{
+	x:number;
+	y:number;
+	name:string;
+	name_element:SVGTextElement;
+	radius:number=5;
+	//
+	circle:SVGCircleElement;
+	//
+	//This methis neded for constructng an entiity
+	constructor(name:string){
+		//
+		//Set the x-cordinate to a random value betwen 0 and 128
+		this.x = 128*Math.random();
+		//
+		//Set the y coordinate to a randin nymber betrwen 0 and 64
+		this.y = 64*Math.random();
+
+		this.name=name;
+		//
+		//Create the event circle
+		// providing a namespace element to create circle 1.  
+        this.circle = <SVGCircleElement>document.createElementNS(meta_visuo.svgns,"circle");
+		// 
+		//Append the circle to the svg 
+        meta_visuo.svg.appendChild(this.circle);
+		// 
+        // Draw the first circle
+        // set the x coordinate
+        this.circle.setAttribute("cx", `${this.x}`);
+        // 
+        // Set the y coordinate
+        this.circle.setAttribute("cy",`${this.y}`);
+        // 
+        // Set the circle radius.
+        this.circle.setAttribute("r",`${this.radius}`);
+
+		// Create text namespace
+		this.name_element = <SVGTextElement>document.createElementNS(meta_visuo.svgns, "text");
+		//
+		//Append the text to the svg element
+		meta_visuo.svg.appendChild(this.name_element);
+		// 
+		// Set the x, y and content
+		this.name_element.setAttribute("x",`${this.x}`);
+		this.name_element.setAttribute("y",`${this.y}`);
+		this.name_element.setAttribute("text-anchor","middle");
+		this.name_element.textContent= this.name;
+		
+	}
+}
+
+//
+//The 3 points that define a relation
+interface Irelation{
+	mid:point;
+	start:point;
+	end:point;
+}
+
+
+//This class represents an is_a  relation between tow entities
+class relation{
+	
+	//The entity fron the the relation comes
+	public src:entity;
+	//
+	//The entity to where the relation ends
+	public dest:entity;
+
+	constructor(src:entity, dest:entity){
+		this.src=src;
+		this.dest = dest;
+	}
+
+	//Draw the relation between the source and the desctination
+	draw():void{
+		// 
+		//
+		//Get the 3points that define the relation betweeen the source  and
+		//the destination
+		const points:Irelation = this.get_relation_points(this.src, this.dest);
+		//
+		const p1 =`${points.start.x},${points.start.y}`;
+		const p2=`${points.mid.x}, ${points.mid.y}`;
+		const p3 =`${points.end.x},${points.end.y}`;
+
+		// 			POLYLINE
+		// Create a polyline
+		const p:SVGPolylineElement =<SVGPolylineElement> document.createElementNS(meta_visuo.svgns,"polyline");
+		// 
+		//Attaching the line to the svg element
+		meta_visuo.svg.appendChild(p);
+		
+		// 
+		// Set the polyline attribute
+		p.setAttribute('points', `${p1},${p2},${p3}`);
+
+		// Attach the marker to the polyline
+		p.setAttribute("marker-mid","url(#arrow)");
+		 
+		// 		THE ARROW MARKER
+		// Provide the marker namespace
+		const m:SVGMarkerElement = <SVGMarkerElement>document.createElementNS(meta_visuo.svgns,"marker");
+		// 
+		//Attaching the marker to the svg element
+		meta_visuo.svg.appendChild(m);
+		// 
+		//Attaching the chickenfoot marker to the svg element
+		//meta_visuo.svg.appendChild(n);
+        // 
+		// // Supply the arrow marker attributes
+		m.setAttribute("viewBox","0 0 16 16");
+		m.setAttribute("id","arrow");
+		m.setAttribute("refX","4");
+		m.setAttribute("refY","4");
+		m.setAttribute("markerWidth","8");
+		m.setAttribute("markerHeight","8");
+		m.setAttribute("orient","auto");
+
+
+		// 		THE ARROW PATH
+		// The namespace drawing the arrow marker path.
+		const pm:SVGPathElement = <SVGPathElement>document.createElementNS(meta_visuo.svgns,"path");
+		//
+		// Draw the arrow path
+		pm.setAttribute("d","M 0 0 L 8 4 L 0 8 z ");
+		// 
+		// Append the marker path to the arrow marker.
+		m.appendChild(pm);
+	}
+
+	//The second version of calculating the exact mid point
+	//
+    //There are 3 points of interest along the hypotenuse between a and b, viz., 
+    //start, mid and end 
+    get_relation_points(a:entity, b:entity):Irelation{
+		//
+		//IN MOST CASES, when the x coordinate of circle 1 is is equivalent to the x-coordinate
+		// of circle 2, then we have a zero difference that will be carried forward to be evaluated
+		//later on will return values of infinity or zero later on.
+		//
+		//To prevent this from happening, if the difference,i.e., (b.y - a.y) or (b.x - a.x) is zero, set it
+		//to be greater than zero,i.e., 0.1 or greater.
+		//
+		//
+		let opposite:number;
+        //
+        //The 'opposite' is the y distance between a and b
+        //const opposite:number= b.y - a.y;
+		if((b.y-a.y)!== 0){
+			opposite= b.y - a.y;
+		}
+		else{
+			opposite=0.1;
+		}
+		let adjacent:number;
+        //
+        //The 'adjacent' is the x distance between the centres of a and b
+        //const adjacent = b.x - a.x;
+		if((b.x - a.x)!==0){
+			adjacent=b.x - a.x;
+		}
+		else{
+			adjacent=0.1;
+		}
+        //
+        //The hypotenuse is the square root of the squares of the 'adjacent' and 
+        //the 'opposite'
+        const hypotenuse = Math.sqrt(adjacent*adjacent + opposite*opposite);
+        //
+        //The targent of thita is calculated by 'oppposite' divided by the 'adjacent'
+        const tanthita = opposite/adjacent;
+        //
+        //Thita is the inverse of the 'tanthita'
+        const thita:number = Math.atan(tanthita);
+		//
+		//The angle of interrest is...
+		const phi = (adjacent>0) ? thita: Math.PI + thita;
+		// const phi=thita;
+        //
+        //Let 'start' be the point at  the intersection of the circle centered at a
+        const start = this.get_point(a, phi,a.radius);
+        //
+        //Let 'mid' be the point mid way along a and b hypotenuse
+        const mid = this.get_point(a, phi, 0.5*hypotenuse);
+        //
+        //Let 'end' The point at the intersection of hypotenuse and the circle 
+        //centered at b
+        const end = this.get_point(a, phi, hypotenuse-b.radius);
+        //
+        //Compile and retun the desired final result
+        return {start, mid, end};
+    }
+
+    //Returns the coordiates of the point which is 'hypo' units from 'a' along
+    //the hypotenuse of a and b (which is inclined at agle thita) 
+    get_point(a:entity, thita:number, hypo:number):point{
+        //
+        //The 'opp' is the 'hypo' times the sine of 'thita';
+        const opp:number = hypo * Math.sin(thita);
+        //
+        //The 'adj' is the 'hypo' times the cosine of thita where thita is the
+        //angle between 'adj' and 'hypo'
+        const adj = hypo * Math.cos(thita);
+        //
+        //The x coordinate of the mid point is 'adj' units from the center of a
+        const x:number = a.x + adj;
+        //
+        //The y coordinate of the mid point is the 'opp' units from the center of a
+        const y:number = a.y + opp; 
+        //
+        //The desired point is at x and and y units from the origin
+        return  {x, y};
+    }
+
+}
+//
+//
+//displaying the metavisuo chart
+class meta_visuo extends outlook.terminal{
+	//
+	static svg:SVGElement;
+	static svgns:string;
+	//
+	//class constructor
+	constructor(mother:main,file:string){
+		super(mother,file)
+	}
+
+	//show panels
+	public async show_panels(): Promise<void> {
+		// 
+        //Get the svg element from our html file 
+        const svg = meta_visuo.svg =<SVGElement><unknown>this.get_element('canvas');
+        // 
+        //Define namespace needed for creating svg elements.
+        const svgns = meta_visuo.svgns = "http://www.w3.org/2000/svg";
+		//
+		//Define the plan entity
+		const plan = new entity('plan');
+		//
+		//Define the activity entity
+		// const activity:entity = new entity('activity');
+		// //
+		// //Define the event entity
+		// const  event :entity = new entity('event');
+		// //
+		// //Create a relation from event to plan
+		// const event_to_plan:relation = new relation(event, plan);
+		// const activity_to_plan:relation = new relation(activity, plan);
+		// //
+		// //Draw the relation
+		// event_to_plan.draw();
+		// activity_to_plan.draw();
+
+		// 
+		// Car pack model
+		//new relation(new entity('owner'), new entity('organization')).draw();
+		const a= new entity('organization');
+		const b= new entity('stock');
+		const c= new entity('operator');
+		const d= new entity('flow');
+		const e= new entity('vehicle');
+		const f= new entity('owner');
+
+		// 
+		new relation(a,c).draw();
+		new relation(c,d).draw();
+		new relation(a,b).draw();
+		new relation(b,d).draw();
+		new relation(b,e).draw();
+		new relation(f,e).draw();
+		new relation(f,a).draw();
+		new relation(b,c).draw();
